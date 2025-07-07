@@ -13,12 +13,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    # - name: Analisis estatic para k8s
-    #   uses: Hmerac/kubeval-action@1.2
-    #   with:
-    #     command: |
-    #       echo "validacion estatica con kubeval"
-    #       kubeval -d manifests --strict  
+    - name: validacion de k8s manifests
+      uses: codewdhruv/kubeval-validation@v1.1.1
+      with:
+        directory: 'kubernetes'
 
   buildpublishgcrlegacy:
     runs-on: ubuntu-latest
