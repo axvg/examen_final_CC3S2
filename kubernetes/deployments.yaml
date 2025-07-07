@@ -16,7 +16,7 @@ spec:
       containers:
       - name: legacy-container
         image: legacy:0.1.0
-        imagePullPolicy: Never
+        imagePullPolicy: Never # porque son imagenes locales
         envFrom:
           - configMapRef:
               name: configmap
@@ -41,41 +41,3 @@ spec:
       - name: microservice-container
         image: microservice:0.1.0
         imagePullPolicy: Never
-
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: postgresql
-  namespace: default
-spec:
-  selector:
-    matchLabels:
-      app: postgresql
-  template:
-    metadata:
-      labels:
-        app: postgresql
-    spec:
-      containers:
-        - name: postgresql
-          image: postgres:13
-          ports:
-            - name: tcp
-              containerPort: 5432
-          env:
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: postgresql-secret
-                  key: POSTGRES_PASSWORD
-            - name: POSTGRES_USER
-              valueFrom:
-                secretKeyRef:
-                  name: postgresql-secret
-                  key: POSTGRES_USER
-            - name: POSTGRES_DB
-              valueFrom:
-                secretKeyRef:
-                  name: postgresql-database
-                  key: POSTGRES_DBS
