@@ -22,4 +22,8 @@ todos los jobs:
 
 ![jobs](jobs.png)
 
+Muestra de imagenes en github container registry:
+
+![gcr](gcr.png)
+
 Declaro que esta entrega fue realizada de forma individual, sin asistencia externa, sin herramientas de generacion automatica, y cimpliendo con todas las reglas del examen.
