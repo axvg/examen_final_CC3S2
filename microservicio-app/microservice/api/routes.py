@@ -6,31 +6,31 @@ from pydantic import BaseModel, Field
 from microservice.services import business_logic
 
 router = APIRouter(
-    prefix="/api/items",
-    tags=["items"]
+    prefix="/api/notes",
+    tags=["notes"]
 )
 
 
 class ItemIn(BaseModel):
-    name: str = Field(..., example="sample item", description="Nombre único del ítem")
+    name: str = Field(..., example="sample note", description="Nombre único de nota")
     description: Optional[str] = Field(
-        None, example="optional description", description="Descripción opcional del ítem"
+        None, example="optional description", description="Descripción opcional de la nota"
     )
 
 
 class ItemOut(ItemIn):
-    id: int = Field(..., description="Identificador único del ítem")
+    id: int = Field(..., description="Identificador único de la nota")
 
 
 @router.post(
     "/",
     response_model=ItemOut,
     status_code=status.HTTP_201_CREATED,
-    summary="Crear un nuevo ítem"
+    summary="Crear una nueva nota"
 )
-def create_item(item: ItemIn) -> ItemOut:
+def create_note(item: ItemIn) -> ItemOut:
     try:
-        created = business_logic.create_item(item.name, item.description)
+        created = business_logic.create_note(item.name, item.description)
         return created
     except Exception as exc:
         raise HTTPException(
@@ -43,13 +43,13 @@ def create_item(item: ItemIn) -> ItemOut:
     "/",
     response_model=List[ItemOut],
     status_code=status.HTTP_200_OK,
-    summary="Listar todos los ítems"
+    summary="Listar todas las notas"
 )
-def list_items() -> List[ItemOut]:
+def list_notes() -> List[ItemOut]:
     try:
-        return business_logic.get_all_items()
+        return business_logic.get_all_notes()
     except Exception as exc:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Error interno al obtener los ítems"
+            detail="Error al obtener notas"
         )

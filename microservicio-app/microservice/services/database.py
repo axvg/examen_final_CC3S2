@@ -11,7 +11,7 @@ def init_db() -> None:
     with sqlite3.connect(DB_PATH) as conn:
         conn.execute(
             """
-            CREATE TABLE IF NOT EXISTS items (
+            CREATE TABLE IF NOT EXISTS notes (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL UNIQUE,
                 description TEXT,
@@ -31,11 +31,11 @@ def get_conn():
         conn.close()
 
 
-def add_item(name: str, description: Optional[str] = None) -> int:
+def add_note(name: str, description: Optional[str] = None) -> int:
     with get_conn() as conn:
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT INTO items (name, description) VALUES (?, ?)",
+            "INSERT INTO notes (name, description) VALUES (?, ?)",
             (name, description)
         )
         conn.commit()
@@ -43,10 +43,10 @@ def add_item(name: str, description: Optional[str] = None) -> int:
         return item_id
 
 
-def list_items() -> List[Dict[str, Optional[str]]]:
+def list_notes() -> List[Dict[str, Optional[str]]]:
     with get_conn() as conn:
         cursor = conn.execute(
-            "SELECT id, name, description, created_at FROM items"
+            "SELECT id, name, description, created_at FROM notes"
         )
         rows = cursor.fetchall()
 
