@@ -1,0 +1,75 @@
+name: deploy
+
+on: [push]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  analisis:
+    runs-on: ubuntu-latest
+    name: analisis estatico
+    steps:
+    - uses: actions/checkout@v4
+
+    # - name: Analisis estatic para k8s
+    #   uses: Hmerac/kubeval-action@1.2
+    #   with:
+    #     command: |
+    #       echo "validacion estatica con kubeval"
+    #       kubeval -d manifests --strict  
+
+  buildpublishgcrlegacy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: './legacy-app'
+
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: login to ghcr
+      uses: docker/login-action@v1
+      with:
+        registry: ghcr.io
+        username: ${{github.actor}}
+        password: ${{secrets.GITHUB_TOKEN}}
+
+    - name: build image
+      run: |
+        docker build . --tag ghcr.io/axvg/legacy:latest
+        docker push ghcr.io/axvg/legacy:latest
+
+  buildpublishgcrmicroservicio:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: './microservicio-app'
+
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: login to ghcr
+      uses: docker/login-action@v1
+      with:
+        registry: ghcr.io
+        username: ${{github.actor}}
+        password: ${{secrets.GITHUB_TOKEN}}
+
+    - name: build image
+      run: |
+        docker build . --tag ghcr.io/axvg/microservicio:latest
+        docker push ghcr.io/axvg/microservicio:latest
