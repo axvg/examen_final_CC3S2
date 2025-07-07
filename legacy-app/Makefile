@@ -1,6 +1,6 @@
 .PHONY: build run stop clean publish
 
-IMAGE_NAME := microservice
+IMAGE_NAME := legacy
 IMAGE_TAG ?= 0.1.0
 
 build:
