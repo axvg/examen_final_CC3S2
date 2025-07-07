@@ -1,0 +1,10 @@
+pytest
+requests
+pytest-cov
+factory-boy
+behave
+flake8
+black
+fastapi[standard]
+uvicorn
+pydantic
