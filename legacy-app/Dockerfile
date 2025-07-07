@@ -31,4 +31,4 @@ USER ${APP_USER}
 
 EXPOSE 80
 
-CMD ["uvicorn", "microservice.main:app", "--host", "0.0.0.0", "--port", "80"]
+CMD ["uvicorn", "legacy.main:app", "--host", "0.0.0.0", "--port", "80"]

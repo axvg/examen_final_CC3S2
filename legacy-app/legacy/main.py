@@ -8,15 +8,15 @@ import sqlite3
 from pathlib import Path
 import uvicorn
 
-class ItemRequest(BaseModel):
-    name: str = Field(..., example="sample item", description="Nombre único del ítem")
+class NoteRequest(BaseModel):
+    name: str = Field(..., example="sample note", description="Nombre único de la nota")
     description: Optional[str] = Field(
-        None, example="optional description", description="Descripción opcional del ítem"
+        None, example="optional description", description="Descripción opcional de la nota"
     )
 
 
-class ItemResponse(ItemRequest):
-    id: int = Field(..., description="Identificador único del ítem")
+class NoteResponse(NoteRequest):
+    id: int = Field(..., description="Identificador único de la nota")
 
 
 DB_PATH = Path("app.db")
@@ -26,7 +26,7 @@ def init_db() -> None:
     with sqlite3.connect(DB_PATH) as conn:
         conn.execute(
             """
-            CREATE TABLE IF NOT EXISTS items (
+            CREATE TABLE IF NOT EXISTS notes (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL UNIQUE,
                 description TEXT,
@@ -46,22 +46,22 @@ def get_conn():
         conn.close()
 
 
-def add_item(name: str, description: Optional[str] = None) -> int:
+def add_note(name: str, description: Optional[str] = None) -> int:
     with get_conn() as conn:
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT INTO items (name, description) VALUES (?, ?)",
+            "INSERT INTO notes (name, description) VALUES (?, ?)",
             (name, description)
         )
         conn.commit()
-        item_id = cursor.lastrowid
-        return item_id
+        note_id = cursor.lastrowid
+        return note_id
 
 
-def list_items() -> List[Dict[str, Optional[str]]]:
+def list_notes() -> List[Dict[str, Optional[str]]]:
     with get_conn() as conn:
         cursor = conn.execute(
-            "SELECT id, name, description, created_at FROM items"
+            "SELECT id, name, description, created_at FROM notes"
         )
         rows = cursor.fetchall()
 
@@ -76,30 +76,30 @@ def list_items() -> List[Dict[str, Optional[str]]]:
     ]
     return result
 
-def create_item(name: str, description: Optional[str] = None) -> Dict[str, Optional[int or str]]:
-    item_id = add_item(name, description)
+def create_note(name: str, description: Optional[str] = None) -> Dict[str, Optional[int or str]]:
+    note_id = add_note(name, description)
 
-    item = {
-        "id": item_id,
+    note = {
+        "id": note_id,
         "name": name,
         "description": description,
     }
 
-    return item
+    return note
 
 
-def get_all_items() -> List[Dict[str, Optional[int or str]]]:
+def get_all_notes() -> List[Dict[str, Optional[int or str]]]:
     try:
-        items = list_items()
-        return items
+        notes = list_notes()
+        return notes
     except Exception as exc:
         return []
 
 
 def get_application() -> FastAPI:
     app = FastAPI(
-        title="Legacy todos ",
-        description="Legacy para lista todos",
+        title="Legacy notes",
+        description="Legacy para notes",
         version="0.1.0",
         docs_url="/",
         redoc_url=None,
@@ -113,10 +113,10 @@ def get_application() -> FastAPI:
 
 app = get_application()
 
-@app.post("/api/item")
-def post_item(item: ItemRequest) -> ItemResponse:
+@app.post("/api/note")
+def post_note(note: NoteRequest) -> NoteResponse:
     try:
-        created = create_item(item.name, item.description)
+        created = create_note(note.name, note.description)
         return created
     except Exception as exc:
         raise HTTPException(
@@ -125,14 +125,14 @@ def post_item(item: ItemRequest) -> ItemResponse:
         )
 
 
-@app.get("/api/item")
-def get_items() -> List[ItemResponse]:
+@app.get("/api/note")
+def get_notes() -> List[NoteResponse]:
     try:
-        return get_all_items()
+        return get_all_notes()
     except Exception as exc:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Error interno al obtener los ítems"
+            detail="Error al obtener notass"
         )
 
 if __name__ == "__main__":
