@@ -18,5 +18,8 @@ legacy image:
 
 ![microservicios](micro.png)
 
+todos los jobs:
+
+![jobs](jobs.png)
 
 Declaro que esta entrega fue realizada de forma individual, sin asistencia externa, sin herramientas de generacion automatica, y cimpliendo con todas las reglas del examen.
