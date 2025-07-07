@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: legacy
+  namespace: default
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      pod: legacy-pod
+  template:
+    metadata:
+      labels:
+        pod: legacy-pod
+    spec:
+      containers:
+      - name: legacy-container
+        image: legacy:0.1.0
+        imagePullPolicy: Never
+        envFrom:
+          - configMapRef:
+              name: configmap
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: microservice
+  namespace: default
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      pod: microservice-pod
+  template:
+    metadata:
+      labels:
+        pod: microservice-pod
+    spec:
+      containers:
+      - name: microservice-container
+        image: microservice:0.1.0
+        imagePullPolicy: Never
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgresql
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: postgresql
+  template:
+    metadata:
+      labels:
+        app: postgresql
+    spec:
+      containers:
+        - name: postgresql
+          image: postgres:13
+          ports:
+            - name: tcp
+              containerPort: 5432
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgresql-secret
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgresql-secret
+                  key: POSTGRES_USER
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: postgresql-database
+                  key: POSTGRES_DBS
